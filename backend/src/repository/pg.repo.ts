@@ -24,7 +24,6 @@ class PGRepository {
         try {
             const client = await this._pool.connect();
             client.release();
-            console.log('Connected to the database');
         } catch (err) {
             console.error('Error connecting to the database', err);
             throw err;

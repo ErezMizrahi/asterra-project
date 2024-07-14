@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { body } from "express-validator";
-import { addUserHobbies, createUser, deleteUser, getUserByPhoneNumber, test } from "../controllers/users.controller";
+import { addUserHobbies, createUser, deleteUser, getAll, getUserByPhoneNumber } from "../controllers/users.controller";
 
 const router = Router();
 
-router.get('/test', test);
+router.get('/', getAll);
 router.get('/:phone', getUserByPhoneNumber);
 router.post('/create',
 [

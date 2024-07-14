@@ -1,7 +1,6 @@
 import dotenv from 'dotenv'
 import { app } from './app';
 dotenv.config()
-import { pool } from './repository/db.connection';
 import { pgRepository } from './repository/pg.repo';
 
 

@@ -1,14 +1,25 @@
 import { BadRequestError } from "../errors/bad-request.error";
 import { NotFoundError } from "../errors/not-found.error";
-import { pool } from "../repository/db.connection";
+import { pgRepository } from "../repository/pg.repo";
 import { Hobbies } from "../types/hobbies";
 import { User } from "../types/user";
 
 class UserService {
 
+    async getAllUsers() {
+        const result = await pgRepository.pool.query('SELECT * FROM "EREZ_MIZRAHI"."USERS" as us left join "EREZ_MIZRAHI"."HOBBIES" as hb on us.id = hb.USER_ID;;')
+        return result.rows.map(row => ({
+            id: row.id,
+            firstName: row.first_name,
+            lastName: row.last_name,
+            address: row.address,
+            phoneNumber: row.phone_number,
+            hobbies: row.hobby
+        }));
+    }
     async getUserByPhoneNumber(phoneNumber: string) {
         const query = `SELECT * FROM "EREZ_MIZRAHI"."USERS" WHERE PHONE_NUMBER = $1;`
-        const result = await pool.query(query, [phoneNumber]);
+        const result = await pgRepository.pool.query(query, [phoneNumber]);
         return result.rows[0];
     }
 
@@ -23,7 +34,7 @@ class UserService {
         const {firstName, lastName, address, phoneNumber} = user;
         const values = [firstName, lastName, address, phoneNumber];
 
-        const result = await pool.query(insertUserQuery, values);
+        const result = await pgRepository.pool.query(insertUserQuery, values);
         if(result.rows.length < 1) throw new BadRequestError('cant add user');
         console.log('User added:', result.rows[0]);
         return result.rows[0];
@@ -33,13 +44,13 @@ class UserService {
         const userHobbies = await this.getUserHobbies(userId);
         if(userHobbies) {
             const deleteHobbiesQuery = `DELETE FROM "EREZ_MIZRAHI"."HOBBIES" WHERE USER_ID = $1;`
-            await pool.query(deleteHobbiesQuery, [userId]);
+            await pgRepository.pool.query(deleteHobbiesQuery, [userId]);
             console.log(`Deleted hobbies for user with ID ${userId}`);
         }
         const deleteQuery = `
         DELETE FROM "EREZ_MIZRAHI"."USERS" WHERE ID = $1;`
         try {
-            await pool.query(deleteQuery, [userId]);
+            await pgRepository.pool.query(deleteQuery, [userId]);
             console.log('User deleted:', userId);
             return;
         } catch (err) {
@@ -50,7 +61,7 @@ class UserService {
 
     async getUserHobbies(userId: string) {
         const query = `SELECT * FROM "EREZ_MIZRAHI"."HOBBIES" WHERE USER_ID = $1;`
-        const result = await pool.query(query, [userId]);
+        const result = await pgRepository.pool.query(query, [userId]);
         return result.rows[0];
     }
 
@@ -77,7 +88,7 @@ class UserService {
 
         }
 
-        const result = await pool.query(query, values);
+        const result = await pgRepository.pool.query(query, values);
         if(result.rows.length < 1) throw new BadRequestError('cant add user hobbies');
         console.log('User hobbies added:', result.rows[0]);
         return result.rows[0];
