@@ -1,3 +1,4 @@
+import { User } from '../types/user';
 import { queryKeys } from '../utils/query.keys';
 import { useQuery } from 'react-query';
 
@@ -7,8 +8,8 @@ const useUsers = () => {
         queryFn: async () => { 
             await new Promise((resolve, reject) => setTimeout((a) =>  resolve(a), 1000));
             const res = await fetch('http://localhost:4000/api/users');
-            return await res.json() ;
-            },
+            return res.json();
+            }
         });
   return {users: data, isLoading}
 }

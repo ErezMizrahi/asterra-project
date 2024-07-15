@@ -16,7 +16,7 @@ const schema = z.object({
 type FormFields = z.infer<typeof schema>;
 
 const HobbiesForm = () => {
-    const { users } = useUsers();
+    const { users, isLoading } = useUsers();
     const queryClient = useQueryClient();
 
     const { register, handleSubmit, setError, formState: { errors, isSubmitting }, reset } = useForm<FormFields>({
@@ -27,23 +27,34 @@ const HobbiesForm = () => {
     const { mutate } = useMutation({
         mutationKey: [queryKeys.addHobby],
         mutationFn: async (data: FormFields) => {
-            await fetch('http://localhost:4000/api/users/hobby' ,{
+            const response = await fetch('http://localhost:4000/api/users/hobby' ,{
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json'},
                 body: JSON.stringify(data)
             });
-        }
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(JSON.stringify(error.errors))
+              }
+
+              return response.json();
+        },
+        onSuccess: (data) => {
+            queryClient.invalidateQueries(queryKeys.all);
+            reset();
+          },
+
+        onError: (errors: any) => {
+            const messages = JSON.parse(errors.message).map((e: { message: string }) => e.message).join('/n/r');
+            setError("root", {
+                message: messages,
+            });
+          }
       });
       
       const onSubmit: SubmitHandler<FormFields> = async (data) => {
-        try {
           mutate({ userId: data.userId, hobby: data.hobby});
-          reset();
-        } catch (error) {
-          setError("root", {
-            message: "This email is already taken",
-          });
-        }
       };
 
   return (
@@ -56,9 +67,11 @@ const HobbiesForm = () => {
         )}
        
        <select {...register("userId")}>
-        <option value="">Select a user</option>
-        {users?.map((user: User) => (
-          <option key={user.id} value={user.id}>
+        {isLoading && <option key="loadingusers" value="">Loading users...</option> }
+        
+        <option key="selectauser" value="">Select a user</option>
+        {users?.map( (user: User, index: number) => (
+          <option key={`${user.id}-${index}`} value={user.id}>
             {user.firstName} {user.lastName}
           </option>
         ))}
@@ -70,6 +83,7 @@ const HobbiesForm = () => {
         )}
         <input {...register("hobby")} type="text" placeholder="" />
         
+        {errors.root && <div className="text-red">{errors.root.message}</div>}
         
         <div className='btn-container'>
             <button className='forms-btn' disabled={isSubmitting} type="submit">
@@ -77,7 +91,6 @@ const HobbiesForm = () => {
             </button>
         </div>
         
-        {errors.root && <div className="text-red">{errors.root.message}</div>}
         </form>
   )
 }

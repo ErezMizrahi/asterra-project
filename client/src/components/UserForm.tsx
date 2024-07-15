@@ -26,26 +26,33 @@ const UserForm = () => {
     const mutation = useMutation({
         mutationKey: [queryKeys.addUser],
         mutationFn: async (data: FormFields) => {
-            await fetch('http://localhost:4000/api/users/create' ,{
+            const response = await fetch('http://localhost:4000/api/users/create' ,{
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json'},
                 body: JSON.stringify(data)
             });
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(JSON.stringify(error.errors))
+              }
+            return data;
         },
           onSuccess: (data) => {
-            queryClient.invalidateQueries({queryKey: [queryKeys.all]});
+            queryClient.setQueryData([queryKeys.all], (oldData: any) => { return [...oldData, data]});
+            reset();
+
+          },
+
+          onError: (errors: any) => {
+            const messages = JSON.parse(errors.message).map((e: { message: string }) => e.message).join('/n/r');
+            setError("root", {
+                message: messages,
+            });
           }
     });
 
       const onSubmit: SubmitHandler<FormFields> = async (data) => {
-        try {
             mutation.mutate(data);
-            reset();
-        } catch (error) {
-          setError("root", {
-            message: "This email is already taken",
-          });
-        }
       };
 
   return (
@@ -74,15 +81,16 @@ const UserForm = () => {
         {errors.phoneNumber && (
             <div className="text-red">{errors.phoneNumber.message}</div>
         )}
-        <input {...register("phoneNumber")} type="text" placeholder="" />
+        <input {...register("phoneNumber")} type="text" placeholder="" maxLength={10}/>
         
+        {errors.root && <div className="text-red">{errors.root.message}</div>}
+
         <div className='btn-container'>
             <button className='forms-btn' disabled={isSubmitting} type="submit">
                 {isSubmitting ? "Loading..." : "Submit"}
             </button>
         </div>
         
-        {errors.root && <div className="text-red">{errors.root.message}</div>}
         </form>
   )
 }

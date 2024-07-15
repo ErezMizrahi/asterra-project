@@ -16,8 +16,8 @@ interface TableProps {
 
 const Table = ({ tableData }: TableProps) => {
     const [data, setData] = useState<User[]>(tableData);
-    const [ isDeleting, setIsDeleting ] = useState(false);
-  
+    const queryClient = useQueryClient();
+
     useEffect(() => {
       setData(tableData);
     }, [tableData]);
@@ -48,29 +48,30 @@ const Table = ({ tableData }: TableProps) => {
         {
           id: 'delete',
           header: 'Delete',
-          cell: (info: any) => (
-            <div className='delete-container'>
-                <button className="delete-btn" onClick={() => mutate(info.row.original.id)}>{isDeleting ? 'Deleting...' : 'Delete'}</button></div>
-          ),
+          cell: (info: any) => {
+            return (
+              <div className='delete-container'>
+              <button className="delete-btn" onClick={() => mutate(info.row.original.id)}>{'Delete'}</button></div>
+            )
+             },
           footer: (info: any) => info.column.id,
         },
       ];
-  }, [data, isDeleting]);
+  }, [data]);
 
 
-  const { mutate, isLoading } = useMutation({
+  const { mutate } = useMutation({
     mutationKey: [queryKeys.deleteUser],
     mutationFn: async (userId: string) => {
-        setIsDeleting(true);
         await fetch(`http://localhost:4000/api/users/delete/${userId}` ,{
             method: 'DELETE',
         });
         return userId;
     },
       onSuccess: (userId: string) => {
-        setIsDeleting(false);
-        const dataCopy = data.filter(user => user.id != +userId);
-        setData(dataCopy);
+        queryClient.setQueryData(
+            [queryKeys.all], data.filter(user => user.id != +userId)
+        )
       }
   });
 

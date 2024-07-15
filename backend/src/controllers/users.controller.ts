@@ -34,6 +34,6 @@ export const deleteUser = async (req: Request, res: Response) => {
 export const addUserHobbies = async (req: Request, res: Response) => {
     const hobbies: Hobbies = req.body;
     const userHobbies = await userService.addHobbiesToUser(hobbies);
-    res.status(200).json({message: userHobbies});
+    res.status(200).json(userHobbies);
 
 }
