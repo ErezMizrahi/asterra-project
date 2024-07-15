@@ -1,4 +1,4 @@
-import React from 'react'; 
+import React, { useMemo, useState } from 'react'; 
 import './style/Table.css';
 import {
   createColumnHelper,
@@ -6,58 +6,52 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { User } from '../types/user';
 
-type User = {
-  id?: number;
-  firstName: string;
-  lastName: string;
-  address: number;
-  phoneNumber: number;
-  hobbies: { hobbies: string[] };
-};
 
-const columnHelper = createColumnHelper<User>();
 
-const columns = [
-    columnHelper.accessor('firstName', {
-      cell: (info) => info.getValue(),
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor((row) => row.lastName, {
-      id: 'lastName',
-      cell: (info) => <i>{info.getValue()}</i>,
-      header: () => <span>Last Name</span>,
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor('address', {
-      header: () => 'Address',
-      cell: (info) => info.renderValue(),
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor('phoneNumber', {
-      header: () => <span>Phone Number</span>,
-      footer: (info) => info.column.id,
-    }),
-    columnHelper.accessor('hobbies', {
-      header: 'Hobbies',
-      footer: (info) => info.column.id,
-    }),
-    {
-      id: 'delete',
-      header: 'Delete',
-      cell: (info: any) => (
-        <button onClick={() => console.log(info.row.original.id)}>Delete</button>
-      ),
-      footer: (info: any) => info.column.id,
-    },
-  ];
+
 
 interface TableProps {
   tableData: User[];
 }
 
 const Table = ({ tableData }: TableProps) => {
-  const [data, _setData] = React.useState(() => [...tableData]);
+  const [data, _setData] = useState<User[]>(tableData);
+
+  const columns = useMemo(() => {
+    const columnHelper = createColumnHelper<User>();
+    return [
+        columnHelper.accessor('firstName', {
+          cell: (info) => info.getValue(),
+          footer: (info) => info.column.id,
+        }),
+        columnHelper.accessor('lastName', {
+            cell: (info) => info.getValue(),
+            footer: (info) => info.column.id,
+          }),
+        columnHelper.accessor('address', {
+          cell: (info) => info.getValue(),
+          footer: (info) => info.column.id,
+        }),
+        columnHelper.accessor('phoneNumber', {
+            cell: (info) => info.getValue(),
+            footer: (info) => info.column.id,
+        }),
+        columnHelper.accessor('hobbies', {
+            cell: (info) => info.getValue().join(', '),
+            footer: (info) => info.column.id,
+        }),
+        {
+          id: 'delete',
+          header: 'Delete',
+          cell: (info: any) => (
+            <button onClick={() => console.log(info.row.original.id)}>Delete</button>
+          ),
+          footer: (info: any) => info.column.id,
+        },
+      ];
+  }, [data]);
 
   const table = useReactTable({
     data,
