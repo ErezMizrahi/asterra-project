@@ -4,5 +4,5 @@ export interface User {
     lastName: string;
     address: number;
     phoneNumber: number;
-    hobbies: string[];
+    hobbies: string;
   };

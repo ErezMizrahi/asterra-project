@@ -1,4 +1,4 @@
 export interface Hobbies {
     userId: string;
-    hobbies: string[];
+    hobby: string;
 }

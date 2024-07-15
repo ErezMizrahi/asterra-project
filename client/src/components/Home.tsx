@@ -1,22 +1,18 @@
 import { useQuery } from "react-query";
 import { queryKeys } from "../utils/query.keys";
 import Table from "./Table";
+import useUsers from "../hooks/useUsers";
+import Loader from "./Loader";
 
 const Home = () => {
-    const { data, isLoading } = useQuery({
-        queryKey: [ queryKeys.all ],
-        queryFn: async ({signal}) => { 
-            const res = await fetch('http://localhost:4000/api/users');
-            return res.json();
-          }
-      });
-      
+    const { users, isLoading } = useUsers();
 
-      if (isLoading) {
-        return <>'loading'</>;
-      }
+    if (isLoading) {
+    return <Loader />;
+    }
+
   return (
-    <Table tableData={data} />
+    <Table tableData={users} />
   )
 }
 

@@ -7,7 +7,7 @@ import { User } from "../types/user";
 class UserService {
 
     async getAllUsers() {
-        const result = await pgRepository.pool.query('SELECT * FROM "EREZ_MIZRAHI"."USERS" as us left join "EREZ_MIZRAHI"."HOBBIES" as hb on us.id = hb.USER_ID;;')
+        const result = await pgRepository.pool.query('SELECT * FROM "EREZ_MIZRAHI"."USERS" as us left join "EREZ_MIZRAHI"."HOBBIES" as hb on us.id = hb.USER_ID;')
         return result.rows.map(row => ({
             id: row.id,
             firstName: row.first_name,
@@ -59,7 +59,7 @@ class UserService {
         }
     }
 
-    async getUserHobbies(userId: string) {
+    async getUserHobbies(userId: string): Promise<Hobbies> {
         const query = `SELECT * FROM "EREZ_MIZRAHI"."HOBBIES" WHERE USER_ID = $1;`
         const result = await pgRepository.pool.query(query, [userId]);
         return result.rows[0];
@@ -77,14 +77,14 @@ class UserService {
                 VALUES ($1, $2)
                 RETURNING *;
                 `;
-                values = [hobbies.userId, hobbies.hobbies];
+                values = [hobbies.userId, hobbies.hobby];
         } else {
             //update
             query = `
                 UPDATE "EREZ_MIZRAHI"."HOBBIES" SET HOBBY = $1 WHERE USER_ID = $2
                 RETURNING *;
                 `;
-                values = [hobbies.hobbies, hobbies.userId];
+                values = [[userHobbies.hobby, hobbies.hobby].join(', '), hobbies.userId];
 
         }
 

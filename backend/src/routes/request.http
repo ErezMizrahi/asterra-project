@@ -22,10 +22,10 @@ Content-Type: application/json
 DELETE http://localhost:4000/api/users/delete/4
 
 ### add user hobbies
-POST http://localhost:4000/api/users/hobbies
+POST http://localhost:4000/api/users/hobby
 Content-Type: application/json
 
 {
-    "userId": 4,
-    "hobbies": ["test", "test2", "3"]
+    "userId": 2,
+    "hobby": "test"
 }

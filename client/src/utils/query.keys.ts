@@ -1,3 +1,6 @@
 export const queryKeys = {
-    all: 'all'
+    all: 'all',
+    addUser: 'addUser',
+    addHobby: 'addHobby',
+    deleteUser: 'deleteUser'
 }

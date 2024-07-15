@@ -1,10 +1,8 @@
-import React, { useMemo } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useMemo } from 'react'
+import { Link } from 'react-router-dom'
 import { routes } from '../utils/routes';
-
+import './style/Navigation.css';
 const Navigation = () => {
-    const navigate = useNavigate();
-
     const menuLinks = useMemo(() => {
       return routes
         .filter(route => route.children)
@@ -19,10 +17,14 @@ const Navigation = () => {
         .flat()
     }, []) 
   return (
-    <ul>
-        {menuLinks.map(route => (
-        <li><Link key={route.name} to={route.path}> {route.name} </Link></li>
-        ))}
+    <ul className='nav-container'>
+        <h3>ASTERRA Project</h3>
+        <div>
+            {menuLinks.map(route => (
+            <li key={route.name} ><Link to={route.path}> {route.name} </Link></li>
+            ))}
+        </div>
+        
     </ul>
   )
 }

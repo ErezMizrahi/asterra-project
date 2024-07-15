@@ -34,16 +34,17 @@ router.post('/create',
 
 router.delete('/delete/:userId', deleteUser);
 
-router.post('/hobbies',
+router.post('/hobby',
     [
         body('userId')
             .trim()
             .notEmpty()
             .isFloat()
             .withMessage("userId is invalid"),
-        body('hobbies')
-            .isArray()
-            .withMessage("hobbies is invalid"),
+        body('hobby')
+            .trim()
+            .notEmpty()
+            .withMessage("hobby is invalid"),
     ], addUserHobbies);
 
 export { router as usersRouter };

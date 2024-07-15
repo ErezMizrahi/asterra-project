@@ -8,6 +8,11 @@ export const getAll = async (req: Request, res: Response) => {
     res.status(200).json(allUsers);
 }
 
+export const getUsers = async (req: Request, res: Response) => {
+    const users = await userService.getAllUsers();
+    res.status(200).json(users);
+}
+
 export const getUserByPhoneNumber = async (req: Request, res: Response) => {
     const phone = req.params.phone;
     const user = await userService.getUserByPhoneNumber(phone);
