@@ -8,3 +8,5 @@ print(final_array)
 img = Image.fromarray(final_array, 'RGB')
 img.save('output/my.png')
 img.show()
+
+#hopeing im right
