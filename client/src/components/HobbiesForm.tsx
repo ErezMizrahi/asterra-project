@@ -27,7 +27,7 @@ const HobbiesForm = () => {
     const { mutate } = useMutation({
         mutationKey: [queryKeys.addHobby],
         mutationFn: async (data: FormFields) => {
-            const response = await fetch('http://localhost:4000/api/users/hobby' ,{
+            const response = await fetch('/api/users/hobby' ,{
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json'},
                 body: JSON.stringify(data)

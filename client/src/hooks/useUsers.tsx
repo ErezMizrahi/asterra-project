@@ -7,7 +7,7 @@ const useUsers = () => {
         queryKey: [ queryKeys.all ],
         queryFn: async () => { 
             await new Promise((resolve, reject) => setTimeout((a) =>  resolve(a), 1000));
-            const res = await fetch('http://localhost:4000/api/users');
+            const res = await fetch('/api/users');
             return res.json();
             }
         });

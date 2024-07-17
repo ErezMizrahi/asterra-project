@@ -63,7 +63,7 @@ const Table = ({ tableData }: TableProps) => {
   const { mutate } = useMutation({
     mutationKey: [queryKeys.deleteUser],
     mutationFn: async (userId: string) => {
-        await fetch(`http://localhost:4000/api/users/delete/${userId}` ,{
+        await fetch(`/api/users/delete/${userId}` ,{
             method: 'DELETE',
         });
         return userId;
